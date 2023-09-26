@@ -1,6 +1,7 @@
 library(shroomDK)
 library(dplyr)
 library(plotly)
+library(forecast)
 
 # Always gitignore your API Key
 
@@ -75,3 +76,14 @@ candlestick_chart <- plot_ly(data = eth_vwap, type = "candlestick",
 
 # Save chart as an HTML file
 htmlwidgets::saveWidget(candlestick_chart, file = "candlestick_chart.html")
+
+# New code -- add forecast
+
+ar_model <- auto.arima(eth_vwap$close)
+
+prediction <- predict(ar_model, n.ahead = 5)
+
+plot_ly( x = 1:737, y = eth_vwap$close, name = 'close', type = 'scatter', mode='markers+lines') %>%
+  add_trace(x = 734:738, y=prediction$pred, name = 'forecast')
+
+
